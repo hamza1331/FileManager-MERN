@@ -15,18 +15,24 @@ export default class Upload extends Component {
       [e.target.name]:e.target.files[0]
     })
   }
-  handleSubmit(e){
+  async handleSubmit(e){
     e.preventDefault()
     if(this.state.file!==''){
       const formData = new FormData()
       formData.append('file',this.state.file)
-      fetch('http://localhost:8080/upload',{
+     await fetch('http://localhost:8080/upload',{
         method:'POST',
         body:formData,
         mode:'no-cors'
-      }).then(window.location='http://localhost:3000')
+      }).then(()=>{
+         fetch('/filedata',{mode: 'no-cors'}).then(res=>res.json()).then(data=>{
+          this.props.sendFile(data)
+          console.log(data)
+        })
+      })
     }
   }
+  
   render() {
     return (
         <form>

@@ -6,9 +6,17 @@ export default class App extends Component {
     this.state={
       files:[]
     }
+    this.getFile = this.getFile.bind(this)
+  }
+  getFile(file){
+    let oldFiles = this.state.files
+    oldFiles.push(file)
+    this.setState({
+      files:oldFiles
+    })
   }
  async componentDidMount(){
-   fetch('/getdata',{mode: 'no-cors'}).then(res=>res.json()).then(data=>{
+   await fetch('/getdata',{mode: 'no-cors'}).then(res=>res.json()).then(data=>{
      this.setState({
        files:data
      })
@@ -20,7 +28,7 @@ export default class App extends Component {
         <div className='row'>
         <div className='col-md-6 m-auto'>
         <h1 className='text-center display-4 my-4'>File Manager</h1>
-        <Upload/>
+        <Upload sendFile={this.getFile}/>
         <hr/>
         {this.state.files.map((file,index)=>{
           if(file.isImage){

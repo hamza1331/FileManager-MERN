@@ -24,6 +24,7 @@ conn.once('open', () => {
   gfs.collection('uploads')
 })
 //Initialize Storage Engine
+let fileData={}
 var storage = new GridfsStorage({
   url: mongoURL,
   file: (req, file) => {
@@ -51,7 +52,7 @@ app.get('/getdata', (req, res) => {
       return res.status(404).json({files:'No files'})
     } else if (err) return res.json(err)
     else{
-      files.map(file=>{
+      files.map((file,index)=>{
         if(file.contentType.includes('image')){
           file.isImage = true
         }
@@ -68,12 +69,16 @@ app.get('/getdata', (req, res) => {
  desc: uploading file to db
 */
 app.post('/upload', upload.single('file'), (req, res) => {
-  // console.log('requested')
-  console.log(req.file)
-  res.json({file:req.file})
-  // res.redirect('http://localhost:3000')
+  fileData= req.file
+  fileData._id = req.file.id
+  delete fileData.id
+  return res.json(req.file)
 })
-
+app.get('/filedata',(req,res)=>{
+  let isImage = fileData.contentType.includes('image')
+  fileData.isImage = isImage
+  return res.json(fileData)
+})
 /*
  @route: /file/filename
  desc: get a file from database and render as image
